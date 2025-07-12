@@ -4,144 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Next-Gen SFMC Playground</title>
+  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <script src="script.js" differ ></script>
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-    /* Light Theme */
-body {
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(to right, #f2f6ff, #e0eaff);
-  color: #222;
-  margin: 0;
-  padding: 0;
-  transition: all 0.3s ease;
-}
-
-header {
-  background: #002f6c;
-  color: white;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.tabs {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  background: white;
-  padding: 1rem;
-  box-shadow: inset 0 -1px 0 #ccc;
-}
-
-.tabs button {
-  background: #e5efff;
-  border: none;
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.tabs button:hover {
-  background: #cbdffe;
-}
-
-.tab {
-  display: none;
-  animation: fadeIn 0.4s ease;
-}
-
-.tab.active {
-  display: block;
-}
-
-select,
-textarea,
-button {
-  width: 100%;
-  margin: 1rem 0;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-}
-
-button {
-  background: #005bea;
-  color: white;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #004bb5;
-}
-
-pre {
-  background: #f1f5f9;
-  padding: 1rem;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin-bottom: 2rem;
-  white-space: pre-wrap;
-}
-
-/* Dark Theme */
-body.dark {
-  background: #121212;
-  color: #f0f0f0;
-}
-
-body.dark header {
-  background: #1e1e2f;
-}
-
-body.dark .tabs {
-  background: #1f1f2f;
-}
-
-body.dark .tabs button {
-  background: #2f2f3f;
-  color: #fff;
-}
-
-body.dark .tabs button:hover {
-  background: #3f3f5f;
-}
-
-body.dark select,
-body.dark textarea,
-body.dark button,
-body.dark pre {
-  background: #2a2a2a;
-  color: #f5f5f5;
-  border-color: #555;
-}
-
-body.dark button {
-  background: #3366ff;
-}
-
-body.dark button:hover {
-  background: #254edb;
-}
-  </style>
+  <script src="script.js" defer></script>
 </head>
 <body>
   <header>
     <h1>🚀 Next-Gen SFMC Playground</h1>
-    <label class="switch">
-      <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
-      <span class="slider"></span>
+    <label>
+      <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()"> Dark Mode
     </label>
   </header>
 
@@ -155,7 +26,16 @@ body.dark button:hover {
   <main>
     <div class="tab" id="ampscriptTab">
       <h2>AMPscript Playground</h2>
-      <select onchange="insertSnippet(this.value, 'ampscriptCode')"></select>
+      <select onchange="insertSnippet(this.value, 'ampscriptCode')">
+        <option value="">-- Choose AMPscript Snippet --</option>
+        <option value="ampscript_var_set">Set Variable</option>
+        <option value="ampscript_if_else">If/Else</option>
+        <option value="ampscript_lookup">Lookup</option>
+        <option value="ampscript_lookupRows">LookupRows</option>
+        <option value="ampscript_now_formatDate">Now/FormatDate</option>
+        <option value="ampscript_empty_length">Empty/Length</option>
+        <option value="ampscript_concat_upper">Concat/Uppercase</option>
+      </select>
       <textarea id="ampscriptCode" rows="8" placeholder="Write your AMPscript here..."></textarea>
       <button onclick="run('ampscript')">▶ Run AMPscript</button>
       <pre id="ampscriptOut">// Output</pre>
@@ -164,8 +44,17 @@ body.dark button:hover {
 
     <div class="tab" id="ssjsTab">
       <h2>SSJS Playground</h2>
-      <select onchange="insertSnippet(this.value, 'ssjsCode')"></select>
-      <textarea id="ssjsCode" rows="8" placeholder="Write your SSJS code here..."></textarea>
+      <select onchange="insertSnippet(this.value, 'ssjsCode')">
+        <option value="">-- Choose SSJS Snippet --</option>
+        <option value="ssjs_load_core">Load Core</option>
+        <option value="ssjs_write">Write()</option>
+        <option value="ssjs_try_catch">Try/Catch</option>
+        <option value="ssjs_lookup">Lookup</option>
+        <option value="ssjs_lookupRows">LookupRows</option>
+        <option value="ssjs_de_init">DE Init</option>
+        <option value="ssjs_json">Parse JSON</option>
+      </select>
+      <textarea id="ssjsCode" rows="8" placeholder="Write your SSJS here..."></textarea>
       <button onclick="run('ssjs')">▶ Run SSJS</button>
       <pre id="ssjsOut">// Output</pre>
       <pre id="ssjsLog">// Log</pre>
@@ -173,7 +62,17 @@ body.dark button:hover {
 
     <div class="tab" id="sqlTab">
       <h2>SQL Playground</h2>
-      <select onchange="insertSnippet(this.value, 'sqlCode')"></select>
+      <select onchange="insertSnippet(this.value, 'sqlCode')">
+        <option value="">-- Choose SQL Snippet --</option>
+        <option value="sql_select_top">SELECT TOP</option>
+        <option value="sql_join">JOIN</option>
+        <option value="sql_case_when">CASE WHEN</option>
+        <option value="sql_datepart">DATEPART</option>
+        <option value="sql_coalesce">COALESCE</option>
+        <option value="sql_isnull">ISNULL</option>
+        <option value="sql_cast_convert">CAST/CONVERT</option>
+        <option value="sql_where_like">WHERE LIKE</option>
+      </select>
       <textarea id="sqlCode" rows="8" placeholder="Write your SQL query here..."></textarea>
       <button onclick="run('sql')">▶ Run SQL</button>
       <pre id="sqlOut">// Output</pre>
@@ -188,5 +87,9 @@ body.dark button:hover {
       <pre id="jsonLog">// Log</pre>
     </div>
   </main>
+
+  <script>
+    switchTab('ampscript');
+  </script>
 </body>
 </html>
