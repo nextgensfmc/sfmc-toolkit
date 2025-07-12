@@ -1,6 +1,7 @@
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(div => div.style.display = 'none');
-  document.getElementById(tab + 'Tab').style.display = 'block';
+  const active = document.getElementById(tab + 'Tab');
+  if (active) active.style.display = 'block';
 }
 
 function toggleDarkMode() {
@@ -10,62 +11,83 @@ function toggleDarkMode() {
 function insertSnippet(value, targetId) {
   const snippets = {
     // AMPscript
-    "ampscript_var_set": '%%[\nVAR @name\nSET @name = "John Doe"\n]%%\nHello %%=v(@name)=%%',
-    "ampscript_if_else": '%%[\nVAR @gender\nSET @gender = "M"\nIF @gender == "M" THEN\n  SET @title = "Mr."\nELSE\n  SET @title = "Ms."\nENDIF\n]%%\n%%=v(@title)=%%',
-    "ampscript_lookup": '%%[\nSET @fname = Lookup("Contacts", "FirstName", "Email", emailaddr)\n]%%\nHello %%=v(@fname)=%%!',
-    "ampscript_lookupRows": '%%[\nSET @rows = LookupRows("Orders", "CustomerID", @id)\nSET @count = RowCount(@rows)\n]%%\nTotal Orders: %%=v(@count)=%%',
-    "ampscript_now_formatDate": '%%[\nSET @now = Now()\nSET @fmt = FormatDate(@now, "yyyy-MM-dd")\n]%%\nToday: %%=v(@fmt)=%%',
-    "ampscript_empty_length": '%%[\nSET @text = ""\nIF Empty(@text) THEN\n  SET @msg = "Empty value"\nENDIF\n]%%\n%%=v(@msg)=%%',
-    "ampscript_concat_upper": '%%[\nSET @name = "maheswara"\nSET @greeting = Concat("Hi ", Uppercase(@name))\n]%%\n%%=v(@greeting)=%%',
+    ampscript_var_set: '%%[ SET @name = "John" ]%%',
+    ampscript_if_else: '%%[ IF @age > 18 THEN SET @msg = "Adult" ELSE SET @msg = "Minor" ENDIF ]%%',
+    ampscript_lookup: '%%[ SET @val = Lookup("MyDE", "Email", "SubscriberKey", @key) ]%%',
+    ampscript_lookupRows: '%%[ SET @rows = LookupRows("Orders", "CustomerId", @cid) ]%%',
+    ampscript_now_formatDate: '%%[ SET @now = Now() SET @formatted = FormatDate(@now, "yyyy-MM-dd") ]%%',
+    ampscript_empty_length: '%%[ IF Empty(@email) THEN SET @msg = "Missing" ENDIF ]%%',
+    ampscript_concat_upper: '%%[ SET @full = Concat("Hi ", ProperCase(@name)) ]%%',
 
     // SSJS
-    "ssjs_load_core": 'Platform.Load("Core", "1");',
-    "ssjs_write": 'Write("Hello from SSJS");',
-    "ssjs_try_catch": 'try {\n  Write("Trying code...");\n} catch(e) {\n  Write("Error: " + Stringify(e));\n}',
-    "ssjs_lookup": 'Platform.Load("Core", "1");\nvar result = Lookup("Contacts", "FirstName", "Email", "test@example.com");\nWrite(result);',
-    "ssjs_lookupRows": 'Platform.Load("Core", "1");\nvar rows = LookupRows("Subscribers", "Status", "Active");\nWrite("Rows: " + rows.length);',
-    "ssjs_de_init": 'Platform.Load("Core", "1");\nvar de = DataExtension.Init("Orders");\nvar row = de.Rows.Lookup("OrderID", "12345");\nWrite(row);',
-    "ssjs_json": 'var json = \'{"name":"Mahesh"}\';\nvar parsed = Platform.Function.ParseJSON(json);\nWrite(parsed.name);',
+    ssjs_load_core: '<script runat="server"> Platform.Load("Core", "1.1.1"); </script>',
+    ssjs_write: '<script runat="server"> Write("Hello from SSJS!"); </script>',
+    ssjs_try_catch: '<script runat="server"> try { Write("Try block"); } catch(e) { Write(e); } </script>',
+    ssjs_lookup: '<script runat="server"> var val = Lookup("MyDE", "Email", "ID", 123); </script>',
+    ssjs_lookupRows: '<script runat="server"> var rows = LookupRows("Orders", "Status", "Shipped"); </script>',
+    ssjs_de_init: '<script runat="server"> var de = DataExtension.Init("MyDE"); </script>',
+    ssjs_json: '<script runat="server"> var json = Platform.Function.ParseJSON(\'{"name":"John"}\'); </script>',
 
     // SQL
-    "sql_select_top": 'SELECT TOP 10 * FROM Contact_DE;',
-    "sql_join": 'SELECT c.Email, o.OrderID\nFROM Contacts c\nJOIN Orders o ON c.ContactID = o.ContactID;',
-    "sql_case_when": 'SELECT FirstName,\nCASE WHEN Gender = \'M\' THEN \'Mr.\' ELSE \'Ms.\' END AS Salutation\nFROM Contacts;',
-    "sql_datepart": 'SELECT Email, DATEPART(month, CreatedDate) AS SignupMonth FROM Subscribers;',
-    "sql_coalesce": 'SELECT Email, COALESCE(FirstName, "Customer") AS Name FROM Contacts;',
-    "sql_isnull": 'SELECT ISNULL(Phone, "Not Provided") AS Phone FROM Contacts;',
-    "sql_cast_convert": 'SELECT CAST(CreatedDate AS DATE) AS SignupDate FROM Subscribers;',
-    "sql_where_like": 'SELECT * FROM Contacts WHERE Email LIKE \'%@gmail.com\';'
+    sql_select_top: 'SELECT TOP 10 * FROM Contacts',
+    sql_join: 'SELECT a.Email, b.OrderID FROM Contacts a JOIN Orders b ON a.ID = b.ContactID',
+    sql_case_when: 'SELECT CASE WHEN Age >= 18 THEN "Adult" ELSE "Minor" END AS Category FROM Contacts',
+    sql_datepart: 'SELECT DATEPART(year, CreatedDate) AS Year FROM Orders',
+    sql_coalesce: 'SELECT COALESCE(FirstName, "Unknown") FROM Contacts',
+    sql_isnull: 'SELECT ISNULL(City, "N/A") FROM Addresses',
+    sql_cast_convert: 'SELECT CAST(Birthdate AS DATE) FROM Contacts',
+    sql_where_like: "SELECT * FROM Contacts WHERE Email LIKE '%@gmail.com%'"
   };
 
-  if (snippets[value]) {
-    document.getElementById(targetId).value = snippets[value];
+  const textarea = document.getElementById(targetId);
+  if (snippets[value] && textarea) {
+    textarea.value = snippets[value];
   }
 }
 
 function run(type) {
-  const code = document.getElementById(type + "Code").value;
+  const input = document.getElementById(type + "Code");
+  const log = document.getElementById(type + "Log");
+  const out = document.getElementById(type + "Out");
+
+  if (!input || !log || !out) return;
+
+  const code = input.value.trim();
   let output = "";
-  let log = "";
+  let debug = "";
 
   try {
-    if (!code.trim()) throw new Error("Code is empty");
+    if (!code) throw new Error("Code is empty");
 
-    if (type === "ampscript" && !code.includes("%%")) throw new Error("Missing %% in AMPscript.");
-    if (type === "sql" && !code.toLowerCase().includes("select")) throw new Error("SQL must contain SELECT.");
-    if (type === "json") {
-      const parsed = JSON.parse(code);
-      output = JSON.stringify(parsed, null, 2);
-      log = "✅ Valid JSON";
-    } else {
-      output = "// Simulated Output for " + type + "\\n" + code;
-      log = "✅ Executed Successfully";
+    switch (type) {
+      case "ampscript":
+        if (!code.includes("%%")) throw new Error("Missing AMPscript delimiters (%%[ ... ]%%)");
+        debug = "✅ AMPscript syntax looks good";
+        output = "// Simulated AMPscript Output\n" + code;
+        break;
+      case "ssjs":
+        if (!code.includes("script runat=\"server\"")) throw new Error("Missing SSJS <script runat=\"server\"> tag");
+        debug = "✅ SSJS syntax OK";
+        output = "// Simulated SSJS Output\n" + code;
+        break;
+      case "sql":
+        if (!code.toLowerCase().includes("select")) throw new Error("SQL must contain SELECT");
+        debug = "✅ SQL looks valid";
+        output = "-- Simulated SQL Output\n" + code;
+        break;
+      case "json":
+        const parsed = JSON.parse(code);
+        output = JSON.stringify(parsed, null, 2);
+        debug = "✅ Valid JSON";
+        break;
+      default:
+        throw new Error("Unknown code type");
     }
   } catch (e) {
-    output = "// Error Output";
-    log = "❌ " + e.message;
+    output = "// ❌ Error\n" + e.message;
+    debug = "❌ " + e.message;
   }
 
-  document.getElementById(type + "Out").innerText = output;
-  document.getElementById(type + "Log").innerText = log;
+  out.innerText = output;
+  log.innerText = debug;
 }
