@@ -1,6 +1,6 @@
 function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(div => div.style.display = 'none');
-  document.getElementById(tab + 'Tab').style.display = 'block';
+  document.querySelectorAll('.tab').forEach(div => div.classList.remove('active'));
+  document.getElementById(tab + 'Tab').classList.add('active');
 }
 
 function toggleDarkMode() {
@@ -25,17 +25,17 @@ function insertSnippet(value, targetId) {
     "ssjs_lookup": 'Platform.Load("Core", "1");\nvar result = Lookup("Contacts", "FirstName", "Email", "test@example.com");\nWrite(result);',
     "ssjs_lookupRows": 'Platform.Load("Core", "1");\nvar rows = LookupRows("Subscribers", "Status", "Active");\nWrite("Rows: " + rows.length);',
     "ssjs_de_init": 'Platform.Load("Core", "1");\nvar de = DataExtension.Init("Orders");\nvar row = de.Rows.Lookup("OrderID", "12345");\nWrite(row);',
-    "ssjs_json": 'var json = \'{"name":"Mahesh"}\';\nvar parsed = Platform.Function.ParseJSON(json);\nWrite(parsed.name);',
+    "ssjs_json": 'var json = "{\"name\":\"Mahesh\"}";\nvar parsed = Platform.Function.ParseJSON(json);\nWrite(parsed.name);',
 
     // SQL
     "sql_select_top": 'SELECT TOP 10 * FROM Contact_DE;',
     "sql_join": 'SELECT c.Email, o.OrderID\nFROM Contacts c\nJOIN Orders o ON c.ContactID = o.ContactID;',
-    "sql_case_when": 'SELECT FirstName,\nCASE WHEN Gender = \'M\' THEN \'Mr.\' ELSE \'Ms.\' END AS Salutation\nFROM Contacts;',
+    "sql_case_when": 'SELECT FirstName,\nCASE WHEN Gender = "M" THEN "Mr." ELSE "Ms." END AS Salutation\nFROM Contacts;',
     "sql_datepart": 'SELECT Email, DATEPART(month, CreatedDate) AS SignupMonth FROM Subscribers;',
     "sql_coalesce": 'SELECT Email, COALESCE(FirstName, "Customer") AS Name FROM Contacts;',
     "sql_isnull": 'SELECT ISNULL(Phone, "Not Provided") AS Phone FROM Contacts;',
     "sql_cast_convert": 'SELECT CAST(CreatedDate AS DATE) AS SignupDate FROM Subscribers;',
-    "sql_where_like": 'SELECT * FROM Contacts WHERE Email LIKE \'%@gmail.com\';'
+    "sql_where_like": 'SELECT * FROM Contacts WHERE Email LIKE "%@gmail.com%";'
   };
 
   if (snippets[value]) {
@@ -58,7 +58,7 @@ function run(type) {
       output = JSON.stringify(parsed, null, 2);
       log = "✅ Valid JSON";
     } else {
-      output = "// Simulated Output for " + type + "\\n" + code;
+      output = "// Simulated Output for " + type + "\n" + code;
       log = "✅ Executed Successfully";
     }
   } catch (e) {
@@ -69,3 +69,6 @@ function run(type) {
   document.getElementById(type + "Out").innerText = output;
   document.getElementById(type + "Log").innerText = log;
 }
+
+// Initialize default tab
+switchTab('ampscript');
