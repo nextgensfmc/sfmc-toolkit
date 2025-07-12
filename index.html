@@ -2,95 +2,196 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Next-Gen SFMC Playground</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SFMC Code Tester</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --fg: #222;
+      --accent: #0072ef;
+      --card: #ffffff;
+      --border: #e0e6ed;
+      --dark-bg: #1e1e2f;
+      --dark-fg: #f5f5f5;
+    }
+    * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: var(--dark-bg);
+      color: var(--dark-fg);
+    }
+    header {
+      background: var(--accent);
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    button.tab-btn {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button.tab-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .card {
+      background: var(--card);
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: all 0.3s;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 0.5rem;
+      font-family: monospace;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    select, button {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    pre {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    .output {
+      white-space: pre-wrap;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dark .card { background: #2a2a40; color: white; }
+    .dark textarea, .dark select, .dark button { background: #3a3a5a; color: white; border: 1px solid #555; }
+    .dark pre { background: #2c2c3c; color: #dcdcdc; }
+  </style>
 </head>
 <body>
   <header>
-    <h1>🚀 Next-Gen SFMC Playground</h1>
-    <label class="switch">
-      <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
-      <span class="slider"></span>
-    </label>
+    SFMC Code Tester
+    <button onclick="toggleDarkMode()">🌓 Toggle Theme</button>
   </header>
-
-  <nav>
-    <button onclick="switchTab('ampscript')">AMPscript</button>
-    <button onclick="switchTab('ssjs')">SSJS</button>
-    <button onclick="switchTab('sql')">SQL</button>
-    <button onclick="switchTab('json')">JSON</button>
-  </nav>
-
-  <main>
-    <!-- AMPscript Tab -->
-    <div class="tab" id="ampscriptTab">
+  <div class="tabs">
+    <button class="tab-btn" onclick="switchTab('ampscript')">AMPscript</button>
+    <button class="tab-btn" onclick="switchTab('ssjs')">SSJS</button>
+    <button class="tab-btn" onclick="switchTab('sql')">SQL</button>
+    <button class="tab-btn" onclick="switchTab('json')">JSON</button>
+  </div>
+  <div class="container">
+    <div id="ampscriptTab" class="tab card">
       <h2>AMPscript</h2>
       <select onchange="insertSnippet(this.value, 'ampscriptCode')">
-        <option value="">-- Choose AMPscript snippet --</option>
+        <option value="">-- Insert Snippet --</option>
         <option value="ampscript_var_set">Set Variable</option>
-        <option value="ampscript_if_else">IF / ELSE</option>
+        <option value="ampscript_if_else">If/Else</option>
         <option value="ampscript_lookup">Lookup</option>
         <option value="ampscript_lookupRows">LookupRows</option>
-        <option value="ampscript_now_formatDate">FormatDate / Now</option>
-        <option value="ampscript_empty_length">Empty / Length</option>
-        <option value="ampscript_concat_upper">Concat / Uppercase</option>
-      </select>
-      <textarea id="ampscriptCode">// AMPscript here...</textarea>
-      <button onclick="run('ampscript')">Run</button>
-      <pre id="ampscriptOut">// Output</pre>
-      <pre id="ampscriptLog">// Log</pre>
+        <option value="ampscript_now_formatDate">Now & FormatDate</option>
+        <option value="ampscript_empty_length">Empty/Length</option>
+        <option value="ampscript_concat_upper">Concat & Upper</option>
+      </select><br>
+      <textarea id="ampscriptCode"></textarea>
+      <button onclick="run('ampscript')">▶ Run</button>
+      <div class="output">
+        <strong>Log:</strong>
+        <pre id="ampscriptLog"></pre>
+        <strong>Output:</strong>
+        <pre id="ampscriptOut"></pre>
+      </div>
     </div>
 
-    <!-- SSJS Tab -->
-    <div class="tab" id="ssjsTab" style="display:none;">
+    <div id="ssjsTab" class="tab card" style="display:none">
       <h2>SSJS</h2>
       <select onchange="insertSnippet(this.value, 'ssjsCode')">
-        <option value="">-- Choose SSJS snippet --</option>
-        <option value="ssjs_load_core">Load Core Library</option>
-        <option value="ssjs_write">Write Output</option>
-        <option value="ssjs_try_catch">Try / Catch</option>
+        <option value="">-- Insert Snippet --</option>
+        <option value="ssjs_load_core">Load Core</option>
+        <option value="ssjs_write">Write()</option>
+        <option value="ssjs_try_catch">Try/Catch</option>
         <option value="ssjs_lookup">Lookup</option>
         <option value="ssjs_lookupRows">LookupRows</option>
-        <option value="ssjs_de_init">DataExtension.Init</option>
-        <option value="ssjs_json">JSON Parse</option>
-      </select>
-      <textarea id="ssjsCode">// SSJS here...</textarea>
-      <button onclick="run('ssjs')">Run</button>
-      <pre id="ssjsOut">// Output</pre>
-      <pre id="ssjsLog">// Log</pre>
+        <option value="ssjs_de_init">DE Init</option>
+        <option value="ssjs_json">Parse JSON</option>
+      </select><br>
+      <textarea id="ssjsCode"></textarea>
+      <button onclick="run('ssjs')">▶ Run</button>
+      <div class="output">
+        <strong>Log:</strong>
+        <pre id="ssjsLog"></pre>
+        <strong>Output:</strong>
+        <pre id="ssjsOut"></pre>
+      </div>
     </div>
 
-    <!-- SQL Tab -->
-    <div class="tab" id="sqlTab" style="display:none;">
+    <div id="sqlTab" class="tab card" style="display:none">
       <h2>SQL</h2>
       <select onchange="insertSnippet(this.value, 'sqlCode')">
-        <option value="">-- Choose SQL snippet --</option>
+        <option value="">-- Insert Snippet --</option>
         <option value="sql_select_top">SELECT TOP</option>
         <option value="sql_join">JOIN</option>
         <option value="sql_case_when">CASE WHEN</option>
         <option value="sql_datepart">DATEPART</option>
         <option value="sql_coalesce">COALESCE</option>
         <option value="sql_isnull">ISNULL</option>
-        <option value="sql_cast_convert">CAST / CONVERT</option>
+        <option value="sql_cast_convert">CAST/CONVERT</option>
         <option value="sql_where_like">WHERE LIKE</option>
-      </select>
-      <textarea id="sqlCode">// SQL here...</textarea>
-      <button onclick="run('sql')">Run</button>
-      <pre id="sqlOut">// Output</pre>
-      <pre id="sqlLog">// Log</pre>
+      </select><br>
+      <textarea id="sqlCode"></textarea>
+      <button onclick="run('sql')">▶ Run</button>
+      <div class="output">
+        <strong>Log:</strong>
+        <pre id="sqlLog"></pre>
+        <strong>Output:</strong>
+        <pre id="sqlOut"></pre>
+      </div>
     </div>
 
-    <!-- JSON Tab -->
-    <div class="tab" id="jsonTab" style="display:none;">
-      <h2>JSON Tester</h2>
-      <textarea id="jsonCode">{ "name": "Mahesh", "email": "test@example.com" }</textarea>
-      <button onclick="run('json')">Run</button>
-      <pre id="jsonOut">// Output</pre>
-      <pre id="jsonLog">// Log</pre>
+    <div id="jsonTab" class="tab card" style="display:none">
+      <h2>JSON</h2>
+      <textarea id="jsonCode">{ "firstName": "Mahesh" }</textarea>
+      <button onclick="run('json')">▶ Run</button>
+      <div class="output">
+        <strong>Log:</strong>
+        <pre id="jsonLog"></pre>
+        <strong>Output:</strong>
+        <pre id="jsonOut"></pre>
+      </div>
     </div>
-  </main>
-
+  </div>
   <script src="script.js"></script>
 </body>
 </html>
