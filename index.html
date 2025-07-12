@@ -2,9 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Next-Gen SFMC Playground</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="script.js" defer></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #f2f6ff, #e0eaff);
+      color: #222;
+    }
+    header {
+      background: #002f6c;
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      background: white;
+      padding: 1rem;
+      box-shadow: inset 0 -1px 0 #ccc;
+    }
+    .tabs button {
+      background: #e5efff;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .tabs button:hover {
+      background: #cbdffe;
+    }
+    main {
+      padding: 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .tab {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+    .tab.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    select, textarea, button {
+      width: 100%;
+      margin: 1rem 0;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      background: #005bea;
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #004bb5;
+    }
+    pre {
+      background: #f1f5f9;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin-bottom: 2rem;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -15,82 +102,48 @@
     </label>
   </header>
 
-  <nav>
+  <div class="tabs">
     <button onclick="switchTab('ampscript')">AMPscript</button>
     <button onclick="switchTab('ssjs')">SSJS</button>
     <button onclick="switchTab('sql')">SQL</button>
     <button onclick="switchTab('json')">JSON</button>
-  </nav>
+  </div>
 
   <main>
-    <!-- AMPscript Tab -->
     <div class="tab" id="ampscriptTab">
-      <h2>AMPscript</h2>
-      <select onchange="insertSnippet(this.value, 'ampscriptCode')">
-        <option value="">-- Choose AMPscript snippet --</option>
-        <option value="ampscript_var_set">Set Variable</option>
-        <option value="ampscript_if_else">IF / ELSE</option>
-        <option value="ampscript_lookup">Lookup</option>
-        <option value="ampscript_lookupRows">LookupRows</option>
-        <option value="ampscript_now_formatDate">FormatDate / Now</option>
-        <option value="ampscript_empty_length">Empty / Length</option>
-        <option value="ampscript_concat_upper">Concat / Uppercase</option>
-      </select>
-      <textarea id="ampscriptCode">// AMPscript here...</textarea>
-      <button onclick="run('ampscript')">Run</button>
+      <h2>AMPscript Playground</h2>
+      <select onchange="insertSnippet(this.value, 'ampscriptCode')"></select>
+      <textarea id="ampscriptCode" rows="8" placeholder="Write your AMPscript here..."></textarea>
+      <button onclick="run('ampscript')">▶ Run AMPscript</button>
       <pre id="ampscriptOut">// Output</pre>
       <pre id="ampscriptLog">// Log</pre>
     </div>
 
-    <!-- SSJS Tab -->
-    <div class="tab" id="ssjsTab" style="display:none;">
-      <h2>SSJS</h2>
-      <select onchange="insertSnippet(this.value, 'ssjsCode')">
-        <option value="">-- Choose SSJS snippet --</option>
-        <option value="ssjs_load_core">Load Core Library</option>
-        <option value="ssjs_write">Write Output</option>
-        <option value="ssjs_try_catch">Try / Catch</option>
-        <option value="ssjs_lookup">Lookup</option>
-        <option value="ssjs_lookupRows">LookupRows</option>
-        <option value="ssjs_de_init">DataExtension.Init</option>
-        <option value="ssjs_json">JSON Parse</option>
-      </select>
-      <textarea id="ssjsCode">// SSJS here...</textarea>
-      <button onclick="run('ssjs')">Run</button>
+    <div class="tab" id="ssjsTab">
+      <h2>SSJS Playground</h2>
+      <select onchange="insertSnippet(this.value, 'ssjsCode')"></select>
+      <textarea id="ssjsCode" rows="8" placeholder="Write your SSJS code here..."></textarea>
+      <button onclick="run('ssjs')">▶ Run SSJS</button>
       <pre id="ssjsOut">// Output</pre>
       <pre id="ssjsLog">// Log</pre>
     </div>
 
-    <!-- SQL Tab -->
-    <div class="tab" id="sqlTab" style="display:none;">
-      <h2>SQL</h2>
-      <select onchange="insertSnippet(this.value, 'sqlCode')">
-        <option value="">-- Choose SQL snippet --</option>
-        <option value="sql_select_top">SELECT TOP</option>
-        <option value="sql_join">JOIN</option>
-        <option value="sql_case_when">CASE WHEN</option>
-        <option value="sql_datepart">DATEPART</option>
-        <option value="sql_coalesce">COALESCE</option>
-        <option value="sql_isnull">ISNULL</option>
-        <option value="sql_cast_convert">CAST / CONVERT</option>
-        <option value="sql_where_like">WHERE LIKE</option>
-      </select>
-      <textarea id="sqlCode">// SQL here...</textarea>
-      <button onclick="run('sql')">Run</button>
+    <div class="tab" id="sqlTab">
+      <h2>SQL Playground</h2>
+      <select onchange="insertSnippet(this.value, 'sqlCode')"></select>
+      <textarea id="sqlCode" rows="8" placeholder="Write your SQL query here..."></textarea>
+      <button onclick="run('sql')">▶ Run SQL</button>
       <pre id="sqlOut">// Output</pre>
       <pre id="sqlLog">// Log</pre>
     </div>
 
-    <!-- JSON Tab -->
-    <div class="tab" id="jsonTab" style="display:none;">
-      <h2>JSON Tester</h2>
-      <textarea id="jsonCode">{ "name": "Mahesh", "email": "test@example.com" }</textarea>
-      <button onclick="run('json')">Run</button>
+    <div class="tab" id="jsonTab">
+      <h2>JSON Validator</h2>
+      <textarea id="jsonCode" rows="8">{ "name": "Mahesh", "email": "test@example.com" }</textarea>
+      <button onclick="run('json')">▶ Validate JSON</button>
       <pre id="jsonOut">// Output</pre>
       <pre id="jsonLog">// Log</pre>
     </div>
   </main>
-
-  <script src="script.js"></script>
 </body>
 </html>
