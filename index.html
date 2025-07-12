@@ -2,194 +2,95 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NextGen SFMC Code Lab</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #f5f7fa;
-      --fg: #222;
-      --accent: #0072ef;
-      --card: #ffffff;
-      --border: #e0e6ed;
-      --dark-bg: #1e1e2f;
-      --dark-fg: #f5f5f5;
-      --shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-    }
-    * {
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.3s ease;
-    }
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--fg);
-    }
-    body.dark {
-      background: var(--dark-bg);
-      color: var(--dark-fg);
-    }
-    header {
-      background: var(--accent);
-      color: white;
-      padding: 1rem 2rem;
-      font-size: 1.5rem;
-      font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow);
-    }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin: 1.5rem 0;
-      animation: fadeIn 0.6s ease-in;
-    }
-    button.tab-btn {
-      background: white;
-      border: 1px solid var(--border);
-      padding: 0.6rem 1.2rem;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      box-shadow: var(--shadow);
-    }
-    button.tab-btn.active {
-      background: var(--accent);
-      color: white;
-    }
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 1rem;
-    }
-    .card {
-      background: var(--card);
-      padding: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 1rem;
-      box-shadow: var(--shadow);
-      margin-bottom: 1rem;
-      animation: fadeIn 0.4s ease;
-    }
-    textarea {
-      width: 100%;
-      height: 220px;
-      font-family: monospace;
-      padding: 1rem;
-      border-radius: 0.75rem;
-      border: 1px solid var(--border);
-      background-color: #fefefe;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
-    }
-    .hidden {
-      display: none;
-    }
-    button.theme-toggle {
-      background: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+  <title>Next-Gen SFMC Playground</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
-    <div style="display: flex; align-items: center; gap: 0.75rem;">
-      <img src="https://drive.google.com/uc?export=view&id=1wpZPiyFASx3bN5sVyLYT835TEzd6R3Lx" alt="Logo" style="height: 40px; border-radius: 8px;">
-      <span>NextGen SFMC Code Lab</span>
-    </div>
-    <button class="theme-toggle" onclick="toggleTheme()">🌓 Theme</button>
+    <h1>🚀 Next-Gen SFMC Playground</h1>
+    <label class="switch">
+      <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
+      <span class="slider"></span>
+    </label>
   </header>
 
-  <div class="tabs">
-    <button class="tab-btn" data-tab="amp">AMPscript</button>
-    <button class="tab-btn" data-tab="ssjs">SSJS</button>
-    <button class="tab-btn" data-tab="sql">SQL</button>
-    <button class="tab-btn" data-tab="json">JSON</button>
-  </div>
+  <nav>
+    <button onclick="switchTab('ampscript')">AMPscript</button>
+    <button onclick="switchTab('ssjs')">SSJS</button>
+    <button onclick="switchTab('sql')">SQL</button>
+    <button onclick="switchTab('json')">JSON</button>
+  </nav>
 
-  <div class="container">
-    <div id="amp" class="card tab-content">
+  <main>
+    <!-- AMPscript Tab -->
+    <div class="tab" id="ampscriptTab">
       <h2>AMPscript</h2>
-      <textarea id="ampText">%%[
-  SET @firstName = [FirstName]
-  SET @greeting = CONCAT("Hello ", @firstName)
-]%%
-
-%%=v(@greeting)=%%</textarea>
+      <select onchange="insertSnippet(this.value, 'ampscriptCode')">
+        <option value="">-- Choose AMPscript snippet --</option>
+        <option value="ampscript_var_set">Set Variable</option>
+        <option value="ampscript_if_else">IF / ELSE</option>
+        <option value="ampscript_lookup">Lookup</option>
+        <option value="ampscript_lookupRows">LookupRows</option>
+        <option value="ampscript_now_formatDate">FormatDate / Now</option>
+        <option value="ampscript_empty_length">Empty / Length</option>
+        <option value="ampscript_concat_upper">Concat / Uppercase</option>
+      </select>
+      <textarea id="ampscriptCode">// AMPscript here...</textarea>
+      <button onclick="run('ampscript')">Run</button>
+      <pre id="ampscriptOut">// Output</pre>
+      <pre id="ampscriptLog">// Log</pre>
     </div>
 
-    <div id="ssjs" class="card tab-content hidden">
+    <!-- SSJS Tab -->
+    <div class="tab" id="ssjsTab" style="display:none;">
       <h2>SSJS</h2>
-      <textarea id="ssjsText"><script runat="server">
-  Platform.Load("core", "1.1.1");
-  var firstName = Attribute.GetValue("FirstName");
-  Write("Hello " + firstName);
-</script></textarea>
+      <select onchange="insertSnippet(this.value, 'ssjsCode')">
+        <option value="">-- Choose SSJS snippet --</option>
+        <option value="ssjs_load_core">Load Core Library</option>
+        <option value="ssjs_write">Write Output</option>
+        <option value="ssjs_try_catch">Try / Catch</option>
+        <option value="ssjs_lookup">Lookup</option>
+        <option value="ssjs_lookupRows">LookupRows</option>
+        <option value="ssjs_de_init">DataExtension.Init</option>
+        <option value="ssjs_json">JSON Parse</option>
+      </select>
+      <textarea id="ssjsCode">// SSJS here...</textarea>
+      <button onclick="run('ssjs')">Run</button>
+      <pre id="ssjsOut">// Output</pre>
+      <pre id="ssjsLog">// Log</pre>
     </div>
 
-    <div id="sql" class="card tab-content hidden">
+    <!-- SQL Tab -->
+    <div class="tab" id="sqlTab" style="display:none;">
       <h2>SQL</h2>
-      <textarea id="sqlText">SELECT 
-  FirstName, 
-  EmailAddress 
-FROM 
-  [Contacts]
-WHERE 
-  IsActive = 1</textarea>
+      <select onchange="insertSnippet(this.value, 'sqlCode')">
+        <option value="">-- Choose SQL snippet --</option>
+        <option value="sql_select_top">SELECT TOP</option>
+        <option value="sql_join">JOIN</option>
+        <option value="sql_case_when">CASE WHEN</option>
+        <option value="sql_datepart">DATEPART</option>
+        <option value="sql_coalesce">COALESCE</option>
+        <option value="sql_isnull">ISNULL</option>
+        <option value="sql_cast_convert">CAST / CONVERT</option>
+        <option value="sql_where_like">WHERE LIKE</option>
+      </select>
+      <textarea id="sqlCode">// SQL here...</textarea>
+      <button onclick="run('sql')">Run</button>
+      <pre id="sqlOut">// Output</pre>
+      <pre id="sqlLog">// Log</pre>
     </div>
 
-    <div id="json" class="card tab-content hidden">
-      <h2>JSON</h2>
-      <textarea id="jsonText">{
-  "name": "John Doe",
-  "email": "john.doe@example.com",
-  "subscribed": true,
-  "preferences": {
-    "language": "en",
-    "frequency": "weekly"
-  }
-}</textarea>
+    <!-- JSON Tab -->
+    <div class="tab" id="jsonTab" style="display:none;">
+      <h2>JSON Tester</h2>
+      <textarea id="jsonCode">{ "name": "Mahesh", "email": "test@example.com" }</textarea>
+      <button onclick="run('json')">Run</button>
+      <pre id="jsonOut">// Output</pre>
+      <pre id="jsonLog">// Log</pre>
     </div>
-  </div>
+  </main>
 
-  <script>
-    const tabButtons = document.querySelectorAll('.tab-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    function activateTab(tabName) {
-      tabContents.forEach(c => c.classList.add('hidden'));
-      tabButtons.forEach(b => b.classList.remove('active'));
-      document.getElementById(tabName).classList.remove('hidden');
-      document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
-      localStorage.setItem('activeTab', tabName);
-    }
-
-    tabButtons.forEach(btn => {
-      btn.addEventListener('click', () => activateTab(btn.dataset.tab));
-    });
-
-    const savedTab = localStorage.getItem('activeTab') || 'amp';
-    activateTab(savedTab);
-
-    function toggleTheme() {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-    }
-
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark');
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
