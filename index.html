@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Next-Gen SFMC All-in-One Playground</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🚀 Next-Gen SFMC | All-in-One Playground</h1>
+    <label class="switch">
+      <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
+      <span class="slider"></span>
+    </label>
+  </header>
+
+  <nav>
+    <button onclick="switchTab('ampscript')">AMPscript</button>
+    <button onclick="switchTab('ssjs')">SSJS</button>
+    <button onclick="switchTab('sql')">SQL</button>
+    <button onclick="switchTab('json')">JSON</button>
+  </nav>
+
+  <main>
+    <!-- AMPscript Tab -->
+    <div class="tab" id="ampscriptTab">
+      <h2>AMPscript</h2>
+      <select onchange="insertSnippet(this.value, 'ampscriptCode')">
+        <option value="">-- Choose snippet --</option>
+        <option value='%%[\\nVAR @name\\nSET @name = "User"\\n]%%\\nHello %%=v(@name)=%%'>Personalization</option>
+        <option value='%%[\\nSET @today = NOW()\\n]%%\\nToday: %%=v(@today)=%%'>Now()</option>
+      </select>
+      <textarea id="ampscriptCode">// AMPscript here...</textarea>
+      <button onclick="run('ampscript')">Run</button>
+      <pre id="ampscriptOut">// Output</pre>
+      <pre id="ampscriptLog">// Log</pre>
+    </div>
+
+    <!-- SSJS Tab -->
+    <div class="tab" id="ssjsTab" style="display:none;">
+      <h2>SSJS</h2>
+      <select onchange="insertSnippet(this.value, 'ssjsCode')">
+        <option value="">-- Choose snippet --</option>
+        <option value='Platform.Load("Core", "1");'>Load Core</option>
+        <option value='Write("Hello from SSJS");'>Write Log</option>
+      </select>
+      <textarea id="ssjsCode">// SSJS here...</textarea>
+      <button onclick="run('ssjs')">Run</button>
+      <pre id="ssjsOut">// Output</pre>
+      <pre id="ssjsLog">// Log</pre>
+    </div>
+
+    <!-- SQL Tab -->
+    <div class="tab" id="sqlTab" style="display:none;">
+      <h2>SQL</h2>
+      <select onchange="insertSnippet(this.value, 'sqlCode')">
+        <option value="">-- Choose snippet --</option>
+        <option value='SELECT TOP 10 * FROM Contacts;'>Select Top</option>
+        <option value='SELECT * FROM A INNER JOIN B ON A.Email = B.Email;'>Join</option>
+      </select>
+      <textarea id="sqlCode">// SQL here...</textarea>
+      <button onclick="run('sql')">Run</button>
+      <pre id="sqlOut">// Output</pre>
+      <pre id="sqlLog">// Log</pre>
+    </div>
+
+    <!-- JSON Tab -->
+    <div class="tab" id="jsonTab" style="display:none;">
+      <h2>JSON Tester</h2>
+      <textarea id="jsonCode">{ "name": "Mahesh", "country": "India" }</textarea>
+      <button onclick="run('json')">Run</button>
+      <pre id="jsonOut">// Output</pre>
+      <pre id="jsonLog">// Log</pre>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
