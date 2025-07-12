@@ -1,71 +1,151 @@
-function switchTab(tab) {
-  document.querySelectorAll('.tab').forEach(div => div.style.display = 'none');
-  document.getElementById(tab + 'Tab').style.display = 'block';
-}
-
-function toggleDarkMode() {
-  document.body.classList.toggle('dark');
-}
-
-function insertSnippet(value, targetId) {
-  const snippets = {
-    // AMPscript
-    "ampscript_var_set": '%%[\nVAR @name\nSET @name = "John Doe"\n]%%\nHello %%=v(@name)=%%',
-    "ampscript_if_else": '%%[\nVAR @gender\nSET @gender = "M"\nIF @gender == "M" THEN\n  SET @title = "Mr."\nELSE\n  SET @title = "Ms."\nENDIF\n]%%\n%%=v(@title)=%%',
-    "ampscript_lookup": '%%[\nSET @fname = Lookup("Contacts", "FirstName", "Email", emailaddr)\n]%%\nHello %%=v(@fname)=%%!',
-    "ampscript_lookupRows": '%%[\nSET @rows = LookupRows("Orders", "CustomerID", @id)\nSET @count = RowCount(@rows)\n]%%\nTotal Orders: %%=v(@count)=%%',
-    "ampscript_now_formatDate": '%%[\nSET @now = Now()\nSET @fmt = FormatDate(@now, "yyyy-MM-dd")\n]%%\nToday: %%=v(@fmt)=%%',
-    "ampscript_empty_length": '%%[\nSET @text = ""\nIF Empty(@text) THEN\n  SET @msg = "Empty value"\nENDIF\n]%%\n%%=v(@msg)=%%',
-    "ampscript_concat_upper": '%%[\nSET @name = "maheswara"\nSET @greeting = Concat("Hi ", Uppercase(@name))\n]%%\n%%=v(@greeting)=%%',
-
-    // SSJS
-    "ssjs_load_core": 'Platform.Load("Core", "1");',
-    "ssjs_write": 'Write("Hello from SSJS");',
-    "ssjs_try_catch": 'try {\n  Write("Trying code...");\n} catch(e) {\n  Write("Error: " + Stringify(e));\n}',
-    "ssjs_lookup": 'Platform.Load("Core", "1");\nvar result = Lookup("Contacts", "FirstName", "Email", "test@example.com");\nWrite(result);',
-    "ssjs_lookupRows": 'Platform.Load("Core", "1");\nvar rows = LookupRows("Subscribers", "Status", "Active");\nWrite("Rows: " + rows.length);',
-    "ssjs_de_init": 'Platform.Load("Core", "1");\nvar de = DataExtension.Init("Orders");\nvar row = de.Rows.Lookup("OrderID", "12345");\nWrite(row);',
-    "ssjs_json": 'var json = \'{"name":"Mahesh"}\';\nvar parsed = Platform.Function.ParseJSON(json);\nWrite(parsed.name);',
-
-    // SQL
-    "sql_select_top": 'SELECT TOP 10 * FROM Contact_DE;',
-    "sql_join": 'SELECT c.Email, o.OrderID\nFROM Contacts c\nJOIN Orders o ON c.ContactID = o.ContactID;',
-    "sql_case_when": 'SELECT FirstName,\nCASE WHEN Gender = \'M\' THEN \'Mr.\' ELSE \'Ms.\' END AS Salutation\nFROM Contacts;',
-    "sql_datepart": 'SELECT Email, DATEPART(month, CreatedDate) AS SignupMonth FROM Subscribers;',
-    "sql_coalesce": 'SELECT Email, COALESCE(FirstName, "Customer") AS Name FROM Contacts;',
-    "sql_isnull": 'SELECT ISNULL(Phone, "Not Provided") AS Phone FROM Contacts;',
-    "sql_cast_convert": 'SELECT CAST(CreatedDate AS DATE) AS SignupDate FROM Subscribers;',
-    "sql_where_like": 'SELECT * FROM Contacts WHERE Email LIKE \'%@gmail.com\';'
-  };
-
-  if (snippets[value]) {
-    document.getElementById(targetId).value = snippets[value];
-  }
-}
-
-function run(type) {
-  const code = document.getElementById(type + "Code").value;
-  let output = "";
-  let log = "";
-
-  try {
-    if (!code.trim()) throw new Error("Code is empty");
-
-    if (type === "ampscript" && !code.includes("%%")) throw new Error("Missing %% in AMPscript.");
-    if (type === "sql" && !code.toLowerCase().includes("select")) throw new Error("SQL must contain SELECT.");
-    if (type === "json") {
-      const parsed = JSON.parse(code);
-      output = JSON.stringify(parsed, null, 2);
-      log = "✅ Valid JSON";
-    } else {
-      output = "// Simulated Output for " + type + "\\n" + code;
-      log = "✅ Executed Successfully";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NextGen SFMC MultiLang SFMC Runner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --fg: #222;
+      --accent: #0072ef;
+      --card: #ffffff;
+      --border: #e0e6ed;
+      --dark-bg: #1e1e2f;
+      --dark-fg: #f5f5f5;
     }
-  } catch (e) {
-    output = "// Error Output";
-    log = "❌ " + e.message;
-  }
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    body.dark {
+      background: var(--dark-bg);
+      color: var(--dark-fg);
+    }
+    header {
+      background: var(--accent);
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    button.tab-btn {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button.tab-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .card {
+      background: var(--card);
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      margin-bottom: 1rem;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <img src="https://drive.google.com/uc?export=view&id=1wpZPiyFASx3bN5sVyLYT835TEzd6R3Lx" alt="Logo" style="height: 40px; border-radius: 8px;">
+      <span>NextGen SFMC MultiLang Runner</span>
+    </div>
+    <button onclick="document.body.classList.toggle('dark')">🌓 Theme</button>
+  </header>
 
-  document.getElementById(type + "Out").innerText = output;
-  document.getElementById(type + "Log").innerText = log;
-}
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('amp')">AMPscript</button>
+    <button class="tab-btn" onclick="showTab('ssjs')">SSJS</button>
+    <button class="tab-btn" onclick="showTab('sql')">SQL</button>
+  </div>
+
+  <div class="container">
+    <div id="amp" class="card tab-content">
+      <h2>AMPscript</h2>
+      <pre>
+%%[
+  SET @firstName = [FirstName]
+  SET @greeting = CONCAT("Hello ", @firstName)
+]%%
+&nbsp;
+%%=v(@greeting)=%%
+      </pre>
+    </div>
+
+    <div id="ssjs" class="card tab-content hidden">
+      <h2>SSJS</h2>
+      <pre>
+<script runat="server">
+  Platform.Load("core", "1.1.1");
+  var firstName = Attribute.GetValue("FirstName");
+  Write("Hello " + firstName);
+</script>
+      </pre>
+    </div>
+
+    <div id="sql" class="card tab-content hidden">
+      <h2>SQL</h2>
+      <pre>
+SELECT 
+  FirstName, 
+  EmailAddress 
+FROM 
+  [Contacts]
+WHERE 
+  IsActive = 1
+      </pre>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(div => {
+        div.classList.add('hidden');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>
