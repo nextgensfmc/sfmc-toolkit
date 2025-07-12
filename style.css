@@ -1,73 +1,197 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0; padding: 0;
-  background: #f4f4f4; color: #111;
-  transition: background 0.3s, color 0.3s;
-}
-body.dark {
-  background: #121212;
-  color: #e0e0e0;
-}
-header {
-  padding: 1rem;
-  background: #002e6d;
-  color: #fff;
-  display: flex; justify-content: space-between; align-items: center;
-}
-nav {
-  background: #ddd;
-  padding: 0.5rem;
-  text-align: center;
-}
-nav button {
-  margin: 0 5px;
-  padding: 8px 12px;
-  font-weight: bold;
-}
-main {
-  padding: 1rem;
-}
-textarea {
-  width: 100%;
-  height: 150px;
-  margin: 10px 0;
-  font-family: monospace;
-  font-size: 14px;
-}
-pre {
-  background: #eee;
-  padding: 1rem;
-  overflow: auto;
-}
-.tab {
-  display: block;
-}
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-}
-.switch input { display: none; }
-.slider {
-  position: absolute; cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 20px;
-}
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 16px; width: 16px;
-  left: 2px; bottom: 2px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
-input:checked + .slider {
-  background-color: #2196F3;
-}
-input:checked + .slider:before {
-  transform: translateX(20px);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SFMC Code Tester</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --fg: #222;
+      --accent: #0072ef;
+      --card: #ffffff;
+      --border: #e0e6ed;
+      --dark-bg: #1e1e2f;
+      --dark-fg: #f5f5f5;
+    }
+    * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: var(--dark-bg);
+      color: var(--dark-fg);
+    }
+    header {
+      background: var(--accent);
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    button.tab-btn {
+      background: white;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button.tab-btn:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 1rem;
+    }
+    .card {
+      background: var(--card);
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      transition: all 0.3s;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 0.5rem;
+      font-family: monospace;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    select, button {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    pre {
+      background: #f0f0f0;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    .output {
+      white-space: pre-wrap;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dark .card { background: #2a2a40; color: white; }
+    .dark textarea, .dark select, .dark button { background: #3a3a5a; color: white; border: 1px solid #555; }
+    .dark pre { background: #2c2c3c; color: #dcdcdc; }
+  </style>
+</head>
+<body>
+  <header>
+    SFMC Code Tester
+    <button onclick="toggleDarkMode()">🌓 Toggle Theme</button>
+  </header>
+  <div class="tabs">
+    <button class="tab-btn" onclick="switchTab('ampscript')">AMPscript</button>
+    <button class="tab-btn" onclick="switchTab('ssjs')">SSJS</button>
+    <button class="tab-btn" onclick="switchTab('sql')">SQL</button>
+    <button class="tab-btn" onclick="switchTab('json')">JSON</button>
+  </div>
+  <div class="container">
+    <div id="ampscriptTab" class="tab card">
+      <h2>AMPscript</h2>
+      <select onchange="insertSnippet(this.value, 'ampscriptCode')">
+        <option value="">-- Insert Snippet --</option>
+        <option value="ampscript_var_set">Set Variable</option>
+        <option value="ampscript_if_else">If/Else</option>
+        <option value="ampscript_lookup">Lookup</option>
+        <option value="ampscript_lookupRows">LookupRows</option>
+        <option value="ampscript_now_formatDate">Now & FormatDate</option>
+        <option value="ampscript_empty_length">Empty/Length</option>
+        <option value="ampscript_concat_upper">Concat & Upper</option>
+      </select><br>
+      <textarea id="ampscriptCode"></textarea>
+      <button onclick="run('ampscript')">▶ Run</button>
+      <div class="output">
+        <strong>Log:</strong>
+        <pre id="ampscriptLog"></pre>
+        <strong>Output:</strong>
+        <pre id="ampscriptOut"></pre>
+      </div>
+    </div>
+
+    <div id="ssjsTab" class="tab card" style="display:none">
+      <h2>SSJS</h2>
+      <select onchange="insertSnippet(this.value, 'ssjsCode')">
+        <option value="">-- Insert Snippet --</option>
+        <option value="ssjs_load_core">Load Core</option>
+        <option value="ssjs_write">Write()</option>
+        <option value="ssjs_try_catch">Try/Catch</option>
+        <option value="ssjs_lookup">Lookup</option>
+        <option value="ssjs_lookupRows">LookupRows</option>
+        <option value="ssjs_de_init">DE Init</option>
+        <option value="ssjs_json">Parse JSON</option>
+      </select><br>
+      <textarea id="ssjsCode"></textarea>
+      <button onclick="run('ssjs')">▶ Run</button>
+      <div class="output">
+        <strong>Log:</strong>
+        <pre id="ssjsLog"></pre>
+        <strong>Output:</strong>
+        <pre id="ssjsOut"></pre>
+      </div>
+    </div>
+
+    <div id="sqlTab" class="tab card" style="display:none">
+      <h2>SQL</h2>
+      <select onchange="insertSnippet(this.value, 'sqlCode')">
+        <option value="">-- Insert Snippet --</option>
+        <option value="sql_select_top">SELECT TOP</option>
+        <option value="sql_join">JOIN</option>
+        <option value="sql_case_when">CASE WHEN</option>
+        <option value="sql_datepart">DATEPART</option>
+        <option value="sql_coalesce">COALESCE</option>
+        <option value="sql_isnull">ISNULL</option>
+        <option value="sql_cast_convert">CAST/CONVERT</option>
+        <option value="sql_where_like">WHERE LIKE</option>
+      </select><br>
+      <textarea id="sqlCode"></textarea>
+      <button onclick="run('sql')">▶ Run</button>
+      <div class="output">
+        <strong>Log:</strong>
+        <pre id="sqlLog"></pre>
+        <strong>Output:</strong>
+        <pre id="sqlOut"></pre>
+      </div>
+    </div>
+
+    <div id="jsonTab" class="tab card" style="display:none">
+      <h2>JSON</h2>
+      <textarea id="jsonCode">{ "firstName": "Mahesh" }</textarea>
+      <button onclick="run('json')">▶ Run</button>
+      <div class="output">
+        <strong>Log:</strong>
+        <pre id="jsonLog"></pre>
+        <strong>Output:</strong>
+        <pre id="jsonOut"></pre>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
